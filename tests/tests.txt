@@ -1,0 +1,58 @@
+# Tests
+
+## Test 1 - Filter the Pinnacle working table [sanity]
+Viewport: desktop (1280x800)
+Covers: /api/sharp/movements, resilient active-league discovery, Pinnacle-only collection, market/line identity, Today, current price range, minimum drop, sorting, reset, /api/sharp/history details
+Description: Verify the primary scanner operates on actual latest pre-match observations.
+Steps:
+1. Open Sharp Scanner and press Reset. Verify Today, all leagues, all real markets, odds 1.01–2.50 and minimum drop 8%.
+2. Select Match winner, then Over / Under. Every visible row must match the market; totals must show Over or Under and the actual line. A truthful empty state is valid.
+3. Select a league, Next 24 hours, minimum drop 15%, odds to 1.50 and sort by Current odds. Check all rows satisfy the filters and are sorted ascending. No duplicate fixture/selection/line rows may appear.
+4. Press Reset. If rows exist, open Details and Price history; verify saved snapshots and the explanation that Opening is first captured, not a verified bookmaker opening. Otherwise verify tracked fixtures and qualifying movements are distinguished with no synthetic rows.
+Expected: Filtered rows use latest fresh Current prices, preserve original Signal in details, and display real markets only. Reset restores defaults.
+
+## Test 2 - Preserve strongest started movers independently of scanner filters
+Viewport: desktop (1280x800)
+Covers: kickoff state transition, Live Watchlist, immutable signal, opening-to-closing drop, implied probability delta, duplicate suppression
+Description: Started matches leave the scanner and retained pre-match movers remain researchable.
+Steps:
+1. Set scanner minimum drop to 15% and choose a narrow league filter.
+2. Open Live Watchlist. Verify its independent 8% and 1.01–2.50 criteria and top-20 limit are visible.
+3. If rows exist, verify their kickoff is past and Opening, Signal, CLV price, signed odds movement and implied delta are shown. Open Details and verify saved prices agree. Missing closing values must be Pending or N/A, never fabricated.
+4. Return to Sharp Scanner. No started match may be listed. If no eligible watchlist rows exist, verify the explicit empty state.
+Expected: Watchlist survives scanner filter changes, retains distinct market movers after kickoff, and shows no in-play prices or betting recommendations.
+
+## Test 3 - Inspect retained closing paths
+Viewport: desktop (1280x800)
+Covers: archived /api/sharp/movements date reads, History & Analytics, Continued/Reversed/Flat, follow-through denominator, /api/sharp/history
+Description: Completed market paths remain saved and analytics use only valid closings.
+Steps:
+1. Open History & Analytics and choose 2026-09-09 as signal date.
+2. Inspect any available records and Details. Closing before Signal means Continued, after Signal means Reversed, within 0.005 means Flat. Unavailable closing is excluded from follow-through.
+3. Verify price increases are not displayed as negative drops. Verify history explains that valid closing requires a fresh pre-kickoff snapshot within 10 minutes of kickoff.
+4. Choose 2020-01-01 and verify truthful empty history. Refresh and confirm no synthetic records appear.
+Expected: Saved paths are retained; missing or stale closing evidence does not contribute to closing analytics. Empty dates show no invented statistics.
+
+## Test 4 - Mobile filter guardrails
+Viewport: mobile (375x667)
+Covers: responsive filters, odds range validation, threshold persistence, reset
+Description: Verify a real scanner workflow on a narrow screen.
+Steps:
+1. Open Sharp Scanner, set odds to 1.50, then attempt odds from 2.00. Verify the range cannot become inverted.
+2. Set minimum drop to 10%, reload and verify it is retained.
+3. Press Reset and verify Today, odds 1.01–2.50 and 8%. Open the market selector and select Over / Under.
+Expected: Controls remain usable, tables scroll within their container, invalid ranges are prevented and Reset restores defaults.
+
+## Test 5 - Surface data failure without fallback rows
+Viewport: mobile (375x667)
+Covers: /api/sharp/movements error handling, Retry, no fabricated provider fallback
+Description: API failures must remain visible.
+QA Faults:
+```json
+[{"method":"GET","path":"/api/sharp/movements?hours=72&minDrop=5","status":500,"body_json":{"error":"simulated_failure"}}]
+```
+Steps:
+1. Open Sharp Scanner with the API fault active.
+2. Verify the visible Pinnacle movements error and press Retry.
+3. Verify the error remains explicit and there are no synthetic rows.
+Expected: Data failure shows an actionable retry error, never demo football signals.

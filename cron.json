@@ -1,0 +1,11 @@
+[
+  {
+    "name": "sharp-collector-v2",
+    "cron": "*/5 * * * *",
+    "handler": "collectSharpHandler",
+    "timezone": "UTC",
+    "payload": {
+      "collectorVersion": "resilient-v2"
+    }
+  }
+]
