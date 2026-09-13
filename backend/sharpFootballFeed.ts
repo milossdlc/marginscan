@@ -1,4 +1,4 @@
-import {secrets} from '@appdeploy/sdk';
+import {secrets} from '../platform/server';
 import type {ProviderFeed} from './provider';
 
 export const SHARP_LEAGUES=[
@@ -110,3 +110,4 @@ export async function sharpFootballFeed():Promise<ProviderFeed>{
   fixtures,
  };
 }
+

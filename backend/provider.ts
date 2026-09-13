@@ -62,3 +62,4 @@ export function inspectFeed(feed:ProviderFeed,at=Date.now()){
  return {counts,quality:(counts.fresh?'fresh':counts.stale?'stale':'missing') as Quality,latestProviderUpdate};
 }
 
+

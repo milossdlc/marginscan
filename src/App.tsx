@@ -1,4 +1,4 @@
-import {api,auth} from '@appdeploy/client';
+import {api,auth} from './client';
 import {useEffect,useId,useRef,useState} from 'react';
 import {Activity,ChartNoAxesCombined,RefreshCw,X} from 'lucide-react';
 import BetaReadiness from './BetaReadiness';
@@ -40,7 +40,7 @@ function openingOdds(signal:LiveSignal){return signal.opening?.odds??signal.from
 function currentOdds(signal:LiveSignal){return signal.current?.odds??signal.toOdds}
 function currentDrop(signal:LiveSignal){return (openingOdds(signal)-currentOdds(signal))/openingOdds(signal)*100}
 function marketLabel(signal:LiveSignal){return signal.identity?.marketType==='totals'?'Over/Under · FT':'1X2 · FT'}
-function uniqueMoves(items:LiveSignal[]){return [...new Map([...items].sort((a,b)=>b.detectedAt-a.detectedAt).map(item=>[item.key||item.fixtureId+'|'+item.identity?.selectionKey,item]).reverse()).values()]}
+function uniqueMoves(items:LiveSignal[]){return [...new Map([...items].sort((a,b)=>b.detectedAt-a.detectedAt).map(item=>[item.key||item.fixtureId+'|'+item.identity?.selectionKey,item] as const).reverse()).values()]}
 function openingDrop(signal:LiveSignal){const opening=openingOdds(signal);return opening>1?((opening-signal.toOdds)/opening)*100:0}
 function closingOdds(signal:LiveSignal){return signal.closing?.status==='calculated'&&signal.closing.odds&&signal.closing.odds>1&&!!signal.commenceTime&&!!signal.closing.observedAt&&!!signal.closing.providerUpdatedAt&&signal.closing.observedAt<signal.commenceTime&&signal.closing.observedAt>=signal.commenceTime-600000&&signal.closing.providerUpdatedAt>=signal.commenceTime-600000?signal.closing.odds:null}
 function openingToClose(signal:LiveSignal){const close=closingOdds(signal),opening=openingOdds(signal);return close&&opening>1?((opening-close)/opening)*100:null}
@@ -239,4 +239,5 @@ export default function App(){
   <footer className='mv-footer'><Activity size={17}/><p>MarginScan tracks Pinnacle market movement and saved pre-kickoff observations. It does not predict match outcomes or recommend bets. Closing-line and follow-through statistics become more useful as the historical sample grows.</p></footer>
  </main>;
 }
+
 

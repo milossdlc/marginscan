@@ -1,4 +1,4 @@
-import { api } from '@appdeploy/client';
+import { api } from './client';
 import { useEffect, useRef, useState } from 'react';
 type ResponseItem={id:string;answers:Record<string,string>;updatedAt:number};
 export default function OwnerReview(){
@@ -10,4 +10,5 @@ export default function OwnerReview(){
  if(!allowed)return null;
  return <section className='faqcard beta-readiness'><h2>Owner review</h2><button className='primary' aria-expanded={open} onClick={()=>{setOpen(!open);if(!open&&!loaded)void load()}}>{open?'Close owner review':'Review beta responses'}</button>{open&&<div><p>Latest saved answers from indexed questionnaires. Earlier answers appear after the tester saves again. Counts and exports cover loaded responses only.</p><button disabled={busy} onClick={()=>void load()}>Refresh responses</button>{error&&<p role='alert'>{error}</p>}{busy&&<p role='status'>Loading responses…</p>}{loaded&&<><label>Data mode<select value={mode} onChange={e=>setMode(e.target.value)}>{['All','Demo','Live','Both','Unsure'].map(m=><option key={m}>{m}</option>)}</select></label><p>{visible.length} matching responses · {items.length} loaded{cursor?' · more available':''}</p><button disabled={busy||!visible.length} onClick={download}>Export shown responses (JSON)</button>{!visible.length&&<p>No matching responses loaded. This does not include older questionnaires that have not been saved again.</p>}{visible.map(item=><article key={item.id} style={{borderTop:'1px solid #52617a',marginTop:20,paddingTop:16,overflowWrap:'anywhere'}}><h3>Response {item.id.slice(-8)}</h3><small>Saved {new Date(item.updatedAt).toLocaleString()}</small><dl>{Object.entries({understanding:'Product understanding',alerts:'Strong Move alerts',clarity:'Product clarity',signalClarity:'Signal clarity',usefulness:'Usefulness',frequency:'Expected usage',pay:'Willingness to pay',mode:'Data mode',outcome:'Session outcome',price:'Monthly price (EUR)',missing:'Missing information',feature:'Valuable feature'}).map(([key,label])=><div key={key}><dt><b>{label}</b></dt><dd style={{margin:'4px 0 12px',whiteSpace:'pre-wrap'}}>{item.answers[key]||'Not answered'}</dd></div>)}</dl></article>)}{cursor&&<button className='primary' disabled={busy} onClick={()=>void load(true)}>Load more responses</button>}</>}</div>}</section>
 }
+
 

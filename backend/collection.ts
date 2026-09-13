@@ -1,4 +1,4 @@
-import {db} from '@appdeploy/sdk';
+import {db} from '../platform/server';
 import {collectV6} from './sharp';
 import {inspectFeed,REFRESH_MS,type OddsProvider,type Quality} from './provider';
 import {finalizeRecentClosings} from './closing';
@@ -52,4 +52,5 @@ export async function runCollection(provider:OddsProvider){
  if(failure)throw failure;
  return health;
 }
+
 

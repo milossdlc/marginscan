@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react';
-import {api} from '@appdeploy/client';
+import {api} from './client';
 
 export type Point={observedAt:number;providerUpdatedAt:number;line:number|null;odds:number;qualityAtCollection?:string;qualityNow?:string};
 export type LiveSignal={id?:string;key:string;fixtureId:string;homeTeam:string;awayTeam:string;league:string;selection:string;fromOdds:number;toOdds:number;dropPercent:number;detectedAt:number;durationMinutes:number;source:string;marketSource?:string;status:string;schemaVersion?:number;signalTimestamp?:number;commenceTime?:number;lifecycle?:string;identity?:{selectionKey:string;marketType:string;period:string;line:number|null};opening?:Point;current?:Point|null;before?:Point;after?:Point;closing?:{status:string;odds:number|null;line:number|null;providerUpdatedAt:number|null;observedAt:number|null;clvPercent:number|null;method:string|null;version:string|null};};
@@ -31,4 +31,5 @@ export function SignalHistory({signal}:{signal:LiveSignal}){
   <p className='history-footnote'>Snapshots are recorded every five minutes when available. Gaps are not interpolated and missing closing prices are not reconstructed.</p>
  </section>;
 }
+
 

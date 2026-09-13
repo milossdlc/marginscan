@@ -56,3 +56,4 @@ Steps:
 2. Verify the visible Pinnacle movements error and press Retry.
 3. Verify the error remains explicit and there are no synthetic rows.
 Expected: Data failure shows an actionable retry error, never demo football signals.
+

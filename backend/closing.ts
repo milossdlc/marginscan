@@ -1,4 +1,4 @@
-import {db} from '@appdeploy/sdk';
+import {db} from '../platform/server';
 type Point={observedAt:number;providerUpdatedAt:number;line:number|null;odds:number;qualityAtCollection?:string};
 type Closing={status:'calculated'|'unavailable';odds:number|null;line:number|null;providerUpdatedAt:number|null;observedAt:number|null;clvPercent:number|null;method:string|null;version:'CLV_V1'|null};
 type Signal={id:string;fixtureId:string;commenceTime:number;detectedAt:number;entryOdds:number;closing?:Closing;identity:{selectionKey:string;line?:number|null}};
@@ -47,4 +47,5 @@ export async function finalizeRecentClosings(at=Date.now()){
  if(saved)checked(await db.update(progressTable,[{id:saved.id,record:progress}]));else checked(await db.add(progressTable,[progress]));
  return {finalized,unavailable};
 }
+
 

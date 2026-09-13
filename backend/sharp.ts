@@ -1,5 +1,5 @@
 import {snapshotQuality,type ProviderFeed,type Quality,type ProviderDescriptor} from './provider';
-import {db} from '@appdeploy/sdk';
+import {db} from '../platform/server';
 import {enqueueClosing} from './closing';
 export type MarketIdentity={fixtureId:string;sport:string;marketType:string;period:string;selectionKey:string;line:number|null;rules:string;currency:'decimal'};
 export type Observation={observedAt:number;providerUpdatedAt:number;line:number|null;odds:number;source:'Pinnacle';provider:string;inPlay:false;providerId?:string;schemaVersion?:number;qualityAtCollection?:Quality;collectionRunAt?:number;transportSnapshotAt?:number};
@@ -80,4 +80,5 @@ export async function readHistory(fixtureId:string,date:string,selectionKey:stri
  const page=await db.list<History>(historyTable(fixtureId,date),{limit:100});
  const history=page.items.find(h=>h.selectionKey===selectionKey);return history?{...history,points:history.points.map(p=>({...p,qualityAtCollection:p.qualityAtCollection||snapshotQuality(p,p.observedAt),qualityNow:snapshotQuality(p)}))}:null;
 }
+
 
