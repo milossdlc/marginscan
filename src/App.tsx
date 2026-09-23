@@ -7,6 +7,7 @@ import OwnerReview from './OwnerReview';
 import {SignalHistory,type LiveSignal} from './LocalComparison';
 import './beta-readiness.css';
 import './movements.css';
+import './scanner-light.css';
 
 type View='Sharp Scanner'|'Live Watchlist'|'History & Analytics'|'Settings'|'Feedback';
 type MatchWindow='today'|'tomorrow'|'date'|'next24'|'all';
@@ -189,6 +190,14 @@ export default function App(){
   <nav className='mv-nav' aria-label='MarginScan views'>{views.map(item=><button key={item} aria-current={view===item?'page':undefined} onClick={()=>{setSelectedSignal(null);setView(item)}}>{item}</button>)}</nav>
   {error&&<p className='mv-error' role='alert'>{error}<button onClick={()=>setError('')}>Dismiss</button></p>}
 
+  <div className='workspace-layout'>
+   <aside className='competition-rail' aria-label='Football navigation'>
+    <section><h2>Football calendar</h2>{Array.from({length:7},(_,offset)=>{const date=new Date(now);date.setDate(date.getDate()+offset);const value=localDate(date.getTime()),active=view==='Sharp Scanner'&&(offset===0&&matchWindow==='today'||offset===1&&matchWindow==='tomorrow'||matchWindow==='date'&&scanDate===value);return <button key={value} aria-pressed={active} onClick={()=>{setView('Sharp Scanner');setSelectedSignal(null);setScanDate(value);setMatchWindow(offset===0?'today':offset===1?'tomorrow':'date')}}><span>{offset===0?'Today':offset===1?'Tomorrow':date.toLocaleDateString([],{weekday:'long'})}</span><small>{date.toLocaleDateString([],{day:'2-digit',month:'short'})}</small></button>})}</section>
+    <section><h2>Popular leagues</h2>{['Premier League','Bundesliga','La Liga','Serie A','Ligue 1','UEFA Champions League','UEFA Europa League'].filter(league=>leagueOptions.includes(league)).map(league=><button key={league} aria-pressed={leagueFilter===league} onClick={()=>{setView('Sharp Scanner');setCountryFilter('all');setLeagueFilter(league)}}>{league}</button>)}{!leagueOptions.length&&<p className='rail-note'>Coverage loads with the feed.</p>}</section>
+    <section><h2>Countries & regions</h2><button aria-pressed={leagueFilter==='all'&&countryFilter==='all'} onClick={()=>{setView('Sharp Scanner');setCountryFilter('all');setLeagueFilter('all')}}>All competitions</button>{countryOptions.map(region=><details key={region} open={countryFilter===region||undefined}><summary>{region}</summary><button className='region-filter' onClick={()=>{setCountryFilter(region);setLeagueFilter('all');setView('Sharp Scanner')}}>All {region}</button>{leagueOptions.filter(league=>country({league} as LiveSignal)===region).map(league=><button key={league} aria-pressed={leagueFilter===league} onClick={()=>{setView('Sharp Scanner');setCountryFilter(region);setLeagueFilter(league)}}>{league}</button>)}</details>)}</section>
+    <div className='ad-slot ad-small' aria-label='Left advertisement space'><small>ADVERTISEMENT</small><span>Ad space</span><small>160 × 250</small></div>
+   </aside>
+   <div className='workspace-center'>
   {view==='Sharp Scanner'&&<section className='scanner-page'>
    <div className='page-title'><div><p className='eyebrow'>PINNACLE FOOTBALL SCANNER</p><h1>Pinnacle movements</h1><p>Opening → current · Football · Upcoming only</p></div><button className='refresh-button' onClick={()=>void loadSharp()} disabled={liveLoading}><RefreshCw size={16} className={liveLoading?'spin':''}/>{liveLoading?'Refreshing':'Refresh'}</button></div>
    <div className='date-bar' aria-label='Match date'>
@@ -267,6 +276,12 @@ export default function App(){
 
   {view==='Feedback'&&<section className='feedback-page'><div className='page-title'><div><p className='eyebrow'>BETA FEEDBACK</p><h1>Help calibrate the product</h1><p>Tell us whether the scanner reduces the time needed to find useful Pinnacle moves.</p></div></div>{user||service?.authenticationConfigured?<BetaReadiness key={user?.userId||'guest'} userId={user?.userId||null} onSignIn={()=>void signIn()}/>:<p className='analytics-note'>Feedback sign-in will be available when account migration is complete.</p>}{user&&<OwnerReview key={user.userId}/>}</section>}
 
+   </div>
+   <aside className='advertising-rail' aria-label='Advertisement spaces'>
+    <div className='ad-slot ad-tall'><small>ADVERTISEMENT</small><span>Ad space</span><small>160 × 600</small></div>
+    <div className='ad-slot ad-small'><small>ADVERTISEMENT</small><span>Ad space</span><small>160 × 250</small></div>
+   </aside>
+  </div>
   <footer className='mv-footer'><Activity size={17}/><p>MarginScan tracks Pinnacle market movement and saved pre-kickoff observations. It does not predict match outcomes or recommend bets. Closing-line and follow-through statistics become more useful as the historical sample grows.</p></footer>
  </main>;
 }

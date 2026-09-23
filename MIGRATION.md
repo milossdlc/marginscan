@@ -35,3 +35,5 @@ The public OddsMath interface was reviewed only for workflow patterns: compact f
 Scanner additions: Today/Tomorrow/explicit local date, country/region filter, grouping, team/competition search, kickoff window, implied probability delta, lifecycle state, and explicit partial-data notices. Watchlist includes upcoming and started-today pre-match movers, ranked by captured opening-to-signal movement. Archive dates remain UTC signal dates, explicitly labelled. League analytics count one latest signal per exact market/selection/line, exclude missing closes from follow-through denominators and show sample sizes.
 
 Only existing supported full-time 1X2 and paired exact-line totals are exposed. Closing validation is shared by details and tables and rejects stale, wrong-line, post-kickoff, and pre-signal observations.
+
+The September 23 follow-up uses a white three-column desktop layout, functional date/league/country navigation on the left, and clearly labelled advertisement inventory on both sides. No ad network or tracking is connected. Ad rails collapse at smaller breakpoints to preserve usable tables.
