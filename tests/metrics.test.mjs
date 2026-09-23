@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+const bundle=await build({entryPoints:['src/signalMetrics.ts'],bundle:true,write:false,format:'esm',platform:'node'});
+const m=await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+const kickoff=Date.UTC(2026,8,23,18);
+const signal={key:'f|over',fixtureId:'f',identity:{marketType:'totals',period:'full_time',selectionKey:'over_2.5',line:2.5},fromOdds:2.5,toOdds:2.2,detectedAt:kickoff-3600000,commenceTime:kickoff,opening:{odds:2.5},current:{odds:2.1},closing:{status:'calculated',odds:2,line:2.5,observedAt:kickoff-60000,providerUpdatedAt:kickoff-90000}};
+test('opening-current and opening-close odds changes differ from probability points',()=>{assert.ok(Math.abs(m.currentDrop(signal)-16)<1e-9);assert.equal(m.openingToClose(signal),20);assert.ok(Math.abs(m.impliedDelta(signal)-10)<1e-9);assert.equal(m.pathLabel(signal),'Continued');});
+test('closing never substitutes a different total line, stale, post-kickoff, or pre-signal snapshot',()=>{for(const patch of [{line:3.5},{observedAt:kickoff},{providerUpdatedAt:kickoff},{observedAt:kickoff-600001},{providerUpdatedAt:kickoff-600001},{odds:Infinity}])assert.equal(m.closingOdds({...signal,closing:{...signal.closing,...patch}}),null);assert.equal(m.closingOdds({...signal,detectedAt:kickoff-30000}),null);});
+test('path handles continuation, reversal, flat and unavailable without inventing closes',()=>{assert.equal(m.pathLabel({...signal,closing:{...signal.closing,odds:2.4}}),'Reversed');assert.equal(m.pathLabel({...signal,closing:{...signal.closing,odds:2.2}}),'Flat');assert.equal(m.pathLabel({...signal,closing:{status:'unavailable'}}),'Unavailable');assert.equal(m.openingToClose({...signal,closing:null}),null);assert.equal(m.pathLabel({...signal,closing:{status:'not_captured'}}),'Pending');});
+test('deduplication retains latest signal independently for exact market and line',()=>{const newer={...signal,detectedAt:signal.detectedAt+1};const otherLine={...signal,identity:{...signal.identity,line:3.5,selectionKey:'over_3.5'}};const rows=m.uniqueMoves([signal,newer,otherLine]);assert.equal(rows.length,2);assert.ok(rows.includes(newer));assert.ok(rows.includes(otherLine));assert.equal(rows.includes(signal),false);});

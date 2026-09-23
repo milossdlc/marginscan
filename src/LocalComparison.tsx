@@ -1,3 +1,4 @@
+import {closingOdds} from './signalMetrics';
 import {useEffect,useState} from 'react';
 import {api} from './client';
 
@@ -23,10 +24,10 @@ export function SignalHistory({signal}:{signal:LiveSignal}){
   const timer=window.setInterval(()=>void refresh(),300000);
   return()=>{active=false;window.clearInterval(timer)};
  },[signal.fixtureId,signal.identity?.selectionKey,selectedDay,retry]);
- const closing=signal.closing?.status==='calculated'&&signal.closing.odds?signal.closing.odds:null;
+ const closing=closingOdds(signal);
  return <section className='price-history'>
   <div className='history-head'><div><h3>Price history</h3><p>Opening is the first price captured by MarginScan, not a verified bookmaker opening. Closing requires a fresh snapshot within 10 minutes before kickoff.</p></div><label>Day<input type='date' value={selectedDay} max={date(Date.now())} onChange={event=>event.target.value&&setSelectedDay(event.target.value)}/></label></div>
-  <div className='history-summary'><span>Opening <b>{signal.opening?.odds?.toFixed(2)??signal.fromOdds.toFixed(2)}</b></span><span>Signal <b>{signal.toOdds.toFixed(2)}</b></span><span>Closing <b>{closing?.toFixed(2)??(signal.closing?.status==='unavailable'?'N/A':'Pending')}</b></span><span>Signal time <b>{exactTime(signal.signalTimestamp||signal.detectedAt)}</b></span></div>
+  <div className='history-summary'><span>Opening <b>{signal.opening?.odds?.toFixed(2)??signal.fromOdds.toFixed(2)}</b></span><span>Signal <b>{signal.toOdds.toFixed(2)}</b></span><span>Closing <b>{closing?.toFixed(2)??(['unavailable','calculated'].includes(signal.closing?.status||'')?'N/A':'Pending')}</b></span><span>Signal time <b>{exactTime(signal.signalTimestamp||signal.detectedAt)}</b></span></div>
   {loading?<p role='status'>Loading saved snapshots…</p>:error?<p role='alert' className='history-error'>{error} <button onClick={()=>setRetry(value=>value+1)}>Retry</button></p>:!points.length?<p className='history-empty'>No stored snapshots for this day.</p>:<div className='history-scroll'><table className='history-points'><thead><tr><th>Observed</th><th>Pinnacle update</th><th>Odds</th><th>Collection quality</th></tr></thead><tbody>{points.map((point,index)=><tr key={point.observedAt+'-'+index}><td>{exactTime(point.observedAt)}</td><td>{exactTime(point.providerUpdatedAt)}</td><td><b>{point.odds.toFixed(3)}</b></td><td>{point.qualityAtCollection||'unknown'}</td></tr>)}</tbody></table></div>}
   <p className='history-footnote'>Snapshots are recorded every five minutes when available. Gaps are not interpolated and missing closing prices are not reconstructed.</p>
  </section>;

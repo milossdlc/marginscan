@@ -11,3 +11,20 @@
  .mv-footer{margin-top:20px;font-size:11px}
 }
 
+/* Filter-first research workspace. */
+.movement-app{width:calc(100% - 32px);max-width:1800px}
+.date-bar{display:flex;align-items:center;gap:6px;margin:12px 0 8px;color:#849ca9;font-size:11px}
+.date-bar button,.date-bar input{border:1px solid #344955;border-radius:4px;padding:6px 10px;background:#0b1720;color:#dce6ea}
+.date-bar button[aria-pressed=true]{border-color:#e8b967;background:#332c1d;color:#f1d294}
+.date-bar label{display:flex;gap:8px;align-items:center}.date-bar>span{margin-left:auto}
+.fixed-filter{display:flex;align-items:center;min-height:34px;padding:6px 8px;border:1px solid #344955;border-radius:5px;color:#edf2f4;font-size:12px;letter-spacing:0;text-transform:none}
+.secondary-filters{display:flex;flex-wrap:wrap;align-items:end;gap:8px;padding:9px 10px;background:#0d1922;border:1px solid #293c48;border-top:0;border-radius:0 0 6px 6px}
+.secondary-filters label{display:flex;flex-direction:column;gap:3px;color:#8196a2;font-size:10px;text-transform:uppercase}
+.secondary-filters input,.secondary-filters select{background:#08131b;border:1px solid #344955;border-radius:4px;color:#edf2f4;padding:5px 8px;min-height:30px}
+.secondary-filters>span{margin-left:auto;color:#8196a2;font-size:11px;padding:6px 0}
+.market-table .league-row td{background:#182935;color:#c2d1d8;font-size:11px;font-weight:700;padding:5px 10px;border-bottom:1px solid #354956}
+.league-row span{font-weight:400;color:#8299a6;margin-left:12px}
+.league-analytics{margin:14px 0;border:1px solid #2b3e49;border-radius:6px;padding:10px;color:#aebfc9}.league-analytics summary{cursor:pointer;font-weight:700}.league-analytics p{font-size:11px;color:#849ca9}
+@media(min-width:1100px){.market-table td{padding:4px 10px}.market-table{font-size:12px}.market-table small{display:inline;margin-left:8px}.match-cell small{display:block;margin:0}.market-table .row-action{padding:3px 7px}.mv-nav button{padding:9px 15px}.page-title{margin:10px 0 8px}.table-shell{max-height:65vh}.scanner-filters{grid-template-columns:120px 140px minmax(140px,1fr) 155px 85px 85px 95px 120px auto}}
+@media(max-width:700px){.movement-app{width:calc(100% - 20px)}.date-bar{flex-wrap:wrap}.date-bar>span{width:100%;margin-left:0}.secondary-filters{display:grid;grid-template-columns:1fr 1fr}.secondary-filters input,.secondary-filters select{width:100%;min-width:0}.secondary-filters>span{grid-column:1/-1;margin-left:0}.scanner-filters{position:static}.date-bar input{max-width:145px}}
+@media(min-width:1100px){.scanner-page>.page-title>div{display:flex;align-items:baseline;gap:16px}.scanner-page>.page-title .eyebrow{display:none}.scanner-page>.page-title h1{font-size:21px;white-space:nowrap}.scanner-page>.page-title p{font-size:12px}.scanner-table.grouped-leagues .match-cell small{display:none}.scanner-table td{height:30px;padding-top:3px;padding-bottom:3px}.scanner-table .path-label{padding:2px 6px}.date-bar{margin-top:8px}.mv-header{padding-bottom:8px}.mv-nav{margin-bottom:10px}}

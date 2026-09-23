@@ -10,3 +10,10 @@
 - Cron expression */5 * * * * is present on the deployed Worker. It deliberately skips collection while migration is disabled.
 - This is NOT live-data or signed-in acceptance: provider access, complete historical import, user mapping, configured Access sign-in, production-volume D1/subrequest limits and real CLV continuity still require verification before domain cutover.
 - Existing AppDeploy production and DNS were left untouched.
+
+## September 23 scanner verification
+
+- Vite production build and both TypeScript checks passed.
+- 12 tests passed: D1 persistence/isolation, auth rejection, input validation, paused collector, real downward collection, exact-line totals persistence, deduplication, closing validation, odds-drop/probability metrics and path classification.
+- Local browser QA used explicitly labelled synthetic fixtures outside repository source and production data. Verified country + totals filter combination, Tomorrow date, watchlist started view, actual snapshot rows, league denominators and desktop/mobile layouts. Synthetic QA fixtures are not deployed.
+- Destination migration status: database ready, provider secret present, collection paused, authentication unconfigured. Full live-data and migrated-account QA awaits historical import and Access configuration.

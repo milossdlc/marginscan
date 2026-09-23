@@ -15,3 +15,16 @@ test('input validation and unknown routes preserve HTTP errors',async()=>{assert
 test('scheduled collector is inert until explicitly enabled',async()=>{const worker=await mf.getWorker();await worker.scheduled({cron:'*/5 * * * *'});const d=await mf.getD1Database('DB');assert.equal((await d.prepare('SELECT count(*) AS n FROM collector_lock').first()).n,0);});
 
 test('collector preserves opening price and queues real downward movement for closing',async()=>{const at=Date.now();const date=new Date(at).toISOString().slice(0,10);const feed={mode:'live',source:'Test provider',snapshotAt:at,fixtures:[{id:'fixture-test',homeTeam:'Home',awayTeam:'Away',league:'Test',commenceTime:at+3600000,quotes:[{bookmaker:'Pinnacle',home:2,draw:3,away:4,updatedAt:at}]}]};await op('collect','',feed);const stateCollection='sharp_state_v6:fixture-test';const historyCollection='sharp_history_v6:fixture-test:'+date;for(const collection of [stateCollection,historyCollection]){const page=await op('list',collection,{});for(const item of page.items){if(item.last)item.last.observedAt=at-300001;if(item.points)for(const point of item.points)point.observedAt=at-300001;await op('update',collection,[{id:item.id,record:item}]);}}feed.fixtures[0].quotes[0].home=1.8;await op('collect','',feed);const signals=await op('list','sharp_signals_v6:'+date,{});assert.equal(signals.items.length,1);assert.equal(signals.items[0].fromOdds,2);assert.equal(signals.items[0].toOdds,1.8);assert.equal(signals.items[0].dropPercent,10);const queue=await op('list','sharp_closing_pending_v43',{});assert.equal(queue.items[0].signalId,signals.items[0].id);});
+
+test('totals preserve separate histories and opening prices for each exact line',async()=>{
+ const at=Date.now(),date=new Date(at).toISOString().slice(0,10),id='totals-fixture';
+ const feed={mode:'live',source:'Test provider',snapshotAt:at,fixtures:[{id,homeTeam:'Home',awayTeam:'Away',league:'Test',commenceTime:at+3600000,quotes:[{bookmaker:'Pinnacle',home:2,draw:3,away:4,updatedAt:at}],totals:[{selectionKey:'over_2.5',line:2.5,odds:2.5,updatedAt:at},{selectionKey:'over_3.5',line:3.5,odds:3.5,updatedAt:at}]}]};
+ await op('collect','',feed);
+ for(const collection of ['sharp_state_v6:'+id,'sharp_history_v6:'+id+':'+date]){for(const item of (await op('list',collection,{})).items){if(item.last)item.last.observedAt=at-300001;if(item.points)for(const point of item.points)point.observedAt=at-300001;await op('update',collection,[{id:item.id,record:item}]);}}
+ feed.fixtures[0].totals[0].odds=2;feed.fixtures[0].totals[1].odds=3;
+ await op('collect','',feed);
+ const signals=(await op('list','sharp_signals_v6:'+date,{})).items.filter(s=>s.fixtureId===id);
+ assert.equal(signals.length,2);assert.deepEqual(signals.map(s=>[s.identity.line,s.opening.odds,s.toOdds]),[[2.5,2.5,2],[3.5,3.5,3]]);
+ const histories=(await op('list','sharp_history_v6:'+id+':'+date,{})).items.filter(h=>h.identity.marketType==='totals');
+ for(const h of histories)assert.ok(h.points.every(p=>p.line===h.identity.line));
+});
